@@ -1,9 +1,11 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.github.legoatoom.modid.mixin",
+  "package": "com.github.legoatoom.enderbench.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "client.MinecraftClientMixin",
+    "client.network.ClientPlayerEntityMixin"
   ],
   "client": [
   ],

@@ -1,29 +1,32 @@
 {
   "schemaVersion": 1,
-  "id": "modid",
+  "id": "enderbench",
   "version": "${version}",
 
-  "name": "ModName",
+  "name": "Ender Bench",
   "description": "This is an example description! Tell everyone what your mod is about!",
   "authors": [
     "legoatoom"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://github.com/legoatoom/EnderBench",
+    "sources": "https://github.com/legoatoom/EnderBench"
   },
 
   "license": "GPL-3.0",
-  "icon": "assets/modid/icon.png",
+  "icon": "assets/enderbench/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.github.legoatoom.modid.ModId"
+      "com.github.legoatoom.enderbench.EnderBench"
+    ],
+    "client": [
+      "com.github.legoatoom.enderbench.client.EnderBenchClient"
     ]
   },
   "mixins": [
-    "modid.mixins.json"
+    "enderbench.mixins.json"
   ],
 
   "depends": {

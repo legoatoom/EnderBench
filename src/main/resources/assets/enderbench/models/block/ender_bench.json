@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "enderbench:block/ender_bench_open",
+    "north": "enderbench:block/ender_bench_open",
+    "south": "enderbench:block/ender_bench_open",
+    "east": "enderbench:block/ender_bench_open",
+    "west": "enderbench:block/ender_bench_open",
+    "up": "enderbench:block/ender_bench_top",
+    "down": "minecraft:block/obsidian"
+  }
+}

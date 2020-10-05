@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "enderbench:block/ender_bench"
+    }
+  }
+}
