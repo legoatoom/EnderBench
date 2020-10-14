@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "Ender Bench",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "description": "Ender Bench is a small Minecraft mod for Fabric that adds a new block to the game. A vanilla style way to remotely access your storage",
   "authors": [
     "legoatoom"
   ],
