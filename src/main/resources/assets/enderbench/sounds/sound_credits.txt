@@ -1,0 +1,1 @@
+ender_bench_close.ogg & ender_bench_open.ogg were made using the opening and closing of the minecraft ender_chest and barrel.

@@ -13,7 +13,6 @@ import net.minecraft.client.options.KeyBinding;
 public class EnderBenchClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        KeyBinding openBench = KeyBindingHelper.registerKeyBinding(new )
         ScreenRegistry.register(ModScreenHandlerType.ENDER_BENCH_SCREEN_HANDLER_SCREEN_HANDLER, EnderBenchScreen::new);
     }
 }

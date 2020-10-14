@@ -1,0 +1,12 @@
+{
+  "ender_bench_open":{
+    "sounds": [
+      "enderbench:ender_bench_open"
+    ]
+  },
+  "ender_bench_close":{
+    "sounds": [
+      "enderbench:ender_bench_close"
+    ]
+  }
+}

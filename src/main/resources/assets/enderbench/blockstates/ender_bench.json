@@ -1,7 +1,10 @@
 {
   "variants": {
-    "": {
-      "model": "enderbench:block/ender_bench"
+    "active=true": {
+      "model": "enderbench:block/ender_bench_active_closed"
+    },
+    "active=false": {
+      "model": "enderbench:block/ender_bench_inactive_closed"
     }
   }
 }

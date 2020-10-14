@@ -1,12 +1,16 @@
 package com.github.legoatoom.enderbench.screen.ingame;
 
 import com.github.legoatoom.enderbench.EnderBench;
+import com.github.legoatoom.enderbench.ModConfigs;
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.netty.buffer.Unpooled;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -42,5 +46,12 @@ public class EnderBenchScreen extends HandledScreen<ScreenHandler> {
         super.init();
         // Centering of the title.
         titleX = (backgroundWidth - textRenderer.getWidth(title)) / 2;
+    }
+
+    @Override
+    public void onClose() {
+        PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
+        ClientSidePacketRegistry.INSTANCE.sendToServer(ModConfigs.CLOSE_BENCH_PACKET_ID, passedData);
+        super.onClose();
     }
 }
