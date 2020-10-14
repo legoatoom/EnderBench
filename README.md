@@ -10,5 +10,3 @@ When the _Ender Bench_ is powerd by redstone, it will no longer stop searching f
 
 The _Ender Bench_ is crafted like:\
 ![png](https://raw.githubusercontent.com/legoatoom/EnderBench/master/images/crafting_recipe.png)
-
-Have fun :D
