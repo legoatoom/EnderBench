@@ -2,6 +2,7 @@ package com.github.legoatoom.enderbench.screen.ingame;
 
 import com.github.legoatoom.enderbench.EnderBench;
 import com.github.legoatoom.enderbench.ModConfigs;
+import com.github.legoatoom.enderbench.client.network.PacketIDs;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.EnvType;
@@ -51,7 +52,7 @@ public class EnderBenchScreen extends HandledScreen<ScreenHandler> {
     @Override
     public void onClose() {
         PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
-        ClientSidePacketRegistry.INSTANCE.sendToServer(ModConfigs.CLOSE_BENCH_PACKET_ID, passedData);
+        ClientSidePacketRegistry.INSTANCE.sendToServer(PacketIDs.CLOSE_BENCH_PACKET_ID, passedData);
         super.onClose();
     }
 }

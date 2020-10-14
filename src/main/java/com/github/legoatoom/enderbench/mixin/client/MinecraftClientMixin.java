@@ -2,6 +2,7 @@ package com.github.legoatoom.enderbench.mixin.client;
 
 import com.github.legoatoom.enderbench.ModConfigs;
 import com.github.legoatoom.enderbench.client.network.IClientPlayerEntity;
+import com.github.legoatoom.enderbench.client.network.PacketIDs;
 import com.github.legoatoom.enderbench.screen.ingame.EnderBenchScreen;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
@@ -53,7 +54,7 @@ public abstract class MinecraftClientMixin {
             BlockPos pos = p.getConnectedBench().getPos();
             PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
             passedData.writeBlockPos(pos);
-            ClientSidePacketRegistry.INSTANCE.sendToServer(ModConfigs.OPEN_BENCH_PACKET_ID,passedData);
+            ClientSidePacketRegistry.INSTANCE.sendToServer(PacketIDs.OPEN_BENCH_PACKET_ID,passedData);
         } else {
             this.openScreen(new InventoryScreen(player));
         }

@@ -1,12 +1,13 @@
 package com.github.legoatoom.enderbench.block;
 
-import com.github.legoatoom.enderbench.ModConfigs;
 import com.github.legoatoom.enderbench.block.entity.EnderBenchEntity;
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import javafx.beans.property.IntegerProperty;
+import com.github.legoatoom.enderbench.sound.ModSoundEvents;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,7 +20,6 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
@@ -74,7 +74,7 @@ public class EnderBenchBlock extends BlockWithEntity {
                 //With this call the server will request the client to open the appropriate Screenhandler
                 player.openHandledScreen(screenHandlerFactory);
             }
-            EnderBenchBlock.playSound(world, ModConfigs.ENDER_BENCH_OPEN, pos);
+            EnderBenchBlock.playSound(world, ModSoundEvents.ENDER_BENCH_OPEN, pos);
 
         }
         return ActionResult.SUCCESS;

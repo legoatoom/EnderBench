@@ -29,13 +29,6 @@ public abstract class AbstractClientPlayerEntityMixin extends PlayerEntity imple
         super(world, pos, yaw, profile);
     }
 
-
-    @Override
-    public void openEnderBenchInventory() {
-        ClientSidePacketRegistry.INSTANCE.sendToServer(ModConfigs.OPEN_BENCH_PACKET_ID,
-                new PacketByteBuf(Unpooled.buffer()));
-    }
-
     @Override
     public boolean hasConnection() {
         if (hasConnection){

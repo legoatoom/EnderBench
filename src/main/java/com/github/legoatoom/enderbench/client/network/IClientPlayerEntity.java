@@ -14,5 +14,4 @@ public interface IClientPlayerEntity {
 
     public void setConnectedBench(EnderBenchEntity enderBenchEntity);
 
-    void openEnderBenchInventory();
 }
