@@ -1,20 +1,31 @@
+/*
+ * Copyright (C) 2020  legoatoom
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package com.github.legoatoom.enderbench.mixin.client;
 
-import com.github.legoatoom.enderbench.ModConfigs;
 import com.github.legoatoom.enderbench.client.network.IClientPlayerEntity;
 import com.github.legoatoom.enderbench.client.network.PacketIDs;
-import com.github.legoatoom.enderbench.screen.ingame.EnderBenchScreen;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.network.ClientPlayerInteractionManager;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,10 +38,6 @@ import org.spongepowered.asm.mixin.injection.Slice;
 public abstract class MinecraftClientMixin {
 
     @Shadow @Nullable public ClientPlayerEntity player;
-
-    @Shadow @Nullable public ClientPlayerInteractionManager interactionManager;
-
-    @Shadow @Nullable public ClientWorld world;
 
     @Shadow public abstract void openScreen(@Nullable Screen screen);
 

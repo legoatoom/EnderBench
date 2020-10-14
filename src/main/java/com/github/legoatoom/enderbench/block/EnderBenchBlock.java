@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2020  legoatoom
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package com.github.legoatoom.enderbench.block;
 
 import com.github.legoatoom.enderbench.block.entity.EnderBenchEntity;
@@ -136,7 +153,7 @@ public class EnderBenchBlock extends BlockWithEntity {
         }
         if (state.get(LOCKED)) {
             double d = (double)pos.getX() + 0.5D;
-            double e = (double)pos.getY();
+            double e = pos.getY();
             double f = (double)pos.getZ() + 0.5D;
 
             for (Direction direction : Direction.values()){
@@ -160,7 +177,7 @@ public class EnderBenchBlock extends BlockWithEntity {
                 if (bl) {
                     world.getBlockTickScheduler().schedule(pos, this, 4);
                 } else {
-                    world.setBlockState(pos, (BlockState)state.cycle(LOCKED), 2);
+                    world.setBlockState(pos, state.cycle(LOCKED), 2);
                 }
             }
 
@@ -174,8 +191,8 @@ public class EnderBenchBlock extends BlockWithEntity {
 
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        if ((Boolean)state.get(LOCKED) && !world.isReceivingRedstonePower(pos)) {
-            world.setBlockState(pos, (BlockState)state.cycle(LOCKED));
+        if (state.get(LOCKED) && !world.isReceivingRedstonePower(pos)) {
+            world.setBlockState(pos, state.cycle(LOCKED));
         }
 
     }
