@@ -1,9 +1,14 @@
-# Fabric Example Mod
+![png](https://raw.githubusercontent.com/legoatoom/EnderBench/master/src/main/resources/assets/enderbench/logo.png)
 
-## Setup
+## Description
+_Ender Bench_ is a small Minecraft mod for Fabric that adds a new block to the game.
+This block has 15 slots of inventory and hopper can add and remove items from it.
 
-For setup instructions please see the [fabric wiki page](https://fabricmc.net/wiki/tutorial:setup) that relates to the IDE that you are using.
+When the closest player is within 32 blocks of the _Ender Bench_ and tries to open its inventory while sneaking, it will instead open the _Ender Bench_.
 
-## License
+When the _Ender Bench_ is powerd by redstone, it will no longer stop searching for the closest player but will instead lock the currently closest player, allow that player only to access it, if it is in range. Other players in range will not be able to access it.
 
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+The _Ender Bench_ is crafted like:\
+![png](https://raw.githubusercontent.com/legoatoom/EnderBench/master/images/crafting_recipe.png)
+
+Have fun :D
