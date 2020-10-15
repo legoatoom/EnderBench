@@ -44,6 +44,8 @@ public class EnderBenchEntity extends BlockEntity implements NamedScreenHandlerF
     public static final int invSize = ModConfigs.EnderBenchSize;
     public static final double range = ModConfigs.EnderBenchRange;
 
+    public boolean isLocked;
+
     private UUID connectionUUID;
     private DefaultedList<ItemStack> inventory;
 
@@ -128,6 +130,8 @@ public class EnderBenchEntity extends BlockEntity implements NamedScreenHandlerF
     @Override
     public void fromTag(BlockState state, CompoundTag tag) {
         super.fromTag(state,tag);
+        this.isLocked = tag.getBoolean("isLocked");
+        this.connectionUUID = tag.getUuid("connection");
         inventory = DefaultedList.ofSize(invSize, ItemStack.EMPTY);
         Inventories.fromTag(tag,this.inventory);
     }
@@ -135,6 +139,8 @@ public class EnderBenchEntity extends BlockEntity implements NamedScreenHandlerF
     @Override
     public CompoundTag toTag(CompoundTag tag) {
         super.toTag(tag);
+        tag.putBoolean("isLocked", isLocked);
+        tag.putUuid("connection", connectionUUID);
         Inventories.toTag(tag, this.inventory);
         return tag;
     }
@@ -142,9 +148,10 @@ public class EnderBenchEntity extends BlockEntity implements NamedScreenHandlerF
     @Override
     public void tick() {
         if (this.world != null && this.world.isClient()) {
+            isLocked = world.getBlockState(this.getPos()).get(EnderBenchBlock.LOCKED);
             PlayerEntity playerEntity = this.world.getClosestPlayer((double)this.pos.getX() + 0.5D, (double)this.pos.getY()  + 0.5D, (double)this.pos.getZ()  + 0.5D, range, false);
             if (connectionUUID != null){
-                if (!world.getBlockState(this.getPos()).get(EnderBenchBlock.LOCKED)) {
+                if (!isLocked) {
                     PlayerEntity owner = this.world.getPlayerByUuid(connectionUUID);
                     if (owner != null && !isPlayerInRange(owner)) {
                         connectionUUID = null;
