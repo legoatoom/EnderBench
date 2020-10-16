@@ -25,7 +25,7 @@ import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class ServerSidePacketRegister {
+public class ModServerPacketRegister {
 
     public static void init(){
         ServerSidePacketRegistry.INSTANCE.register(PacketIDs.OPEN_BENCH_PACKET_ID, ((packetContext, packetByteBuf) -> {

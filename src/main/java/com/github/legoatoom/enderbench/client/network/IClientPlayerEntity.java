@@ -17,16 +17,16 @@
 
 package com.github.legoatoom.enderbench.client.network;
 
-import com.github.legoatoom.enderbench.block.entity.EnderBenchEntity;
+import net.minecraft.util.math.BlockPos;
 
 
 public interface IClientPlayerEntity {
 
 
-    boolean hasConnection();
+    boolean enderbench_hasConnection();
 
-    EnderBenchEntity getConnectedBench();
+    BlockPos enderbench_getConnectedBenchPos();
 
-    void setConnectedBench(EnderBenchEntity enderBenchEntity);
+    void enderbench_setConnectedBenchPos(BlockPos enderBenchEntityPos);
 
 }

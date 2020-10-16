@@ -17,6 +17,7 @@
 
 package com.github.legoatoom.enderbench.client;
 
+import com.github.legoatoom.enderbench.client.network.ModClientPacketRegister;
 import com.github.legoatoom.enderbench.screen.ModScreenHandlerType;
 import com.github.legoatoom.enderbench.screen.ingame.EnderBenchScreen;
 import net.fabricmc.api.ClientModInitializer;
@@ -29,5 +30,6 @@ public class EnderBenchClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ScreenRegistry.register(ModScreenHandlerType.ENDER_BENCH_SCREEN_HANDLER_SCREEN_HANDLER, EnderBenchScreen::new);
+        ModClientPacketRegister.init();
     }
 }

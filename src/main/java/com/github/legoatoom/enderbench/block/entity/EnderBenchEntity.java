@@ -20,33 +20,47 @@ package com.github.legoatoom.enderbench.block.entity;
 import com.github.legoatoom.enderbench.ModConfigs;
 import com.github.legoatoom.enderbench.block.EnderBenchBlock;
 import com.github.legoatoom.enderbench.client.network.IClientPlayerEntity;
+import com.github.legoatoom.enderbench.client.network.PacketIDs;
 import com.github.legoatoom.enderbench.screen.EnderBenchScreenHandler;
+import io.netty.buffer.Unpooled;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
+import net.fabricmc.fabric.api.server.PlayerStream;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 public class EnderBenchEntity extends BlockEntity implements NamedScreenHandlerFactory, Inventory, Tickable {
 
     public static final int invSize = ModConfigs.EnderBenchSize;
     public static final double range = ModConfigs.EnderBenchRange;
 
+    public static final TargetPredicate IN_RANGE_PREDICATE = new TargetPredicate().setBaseMaxDistance(range);
+
     public boolean isLocked;
 
-    private UUID connectionUUID;
+    private UUID masterUuid;
     private DefaultedList<ItemStack> inventory;
 
     public EnderBenchEntity() {
@@ -54,8 +68,8 @@ public class EnderBenchEntity extends BlockEntity implements NamedScreenHandlerF
         this.inventory = DefaultedList.ofSize(invSize, ItemStack.EMPTY);
     }
 
-    public UUID getConnectionUUID() {
-        return connectionUUID;
+    public UUID getMasterUuid() {
+        return masterUuid;
     }
 
     public DefaultedList<ItemStack> getItems(){
@@ -110,8 +124,6 @@ public class EnderBenchEntity extends BlockEntity implements NamedScreenHandlerF
         return true;
     }
 
-
-
     @Override
     public Text getDisplayName() {
         return new TranslatableText(getCachedState().getBlock().getTranslationKey());
@@ -131,7 +143,7 @@ public class EnderBenchEntity extends BlockEntity implements NamedScreenHandlerF
     public void fromTag(BlockState state, CompoundTag tag) {
         super.fromTag(state,tag);
         this.isLocked = tag.getBoolean("isLocked");
-        this.connectionUUID = tag.getUuid("connection");
+        if (tag.contains("connection")) this.masterUuid = tag.getUuid("connection");
         inventory = DefaultedList.ofSize(invSize, ItemStack.EMPTY);
         Inventories.fromTag(tag,this.inventory);
     }
@@ -140,47 +152,69 @@ public class EnderBenchEntity extends BlockEntity implements NamedScreenHandlerF
     public CompoundTag toTag(CompoundTag tag) {
         super.toTag(tag);
         tag.putBoolean("isLocked", isLocked);
-        tag.putUuid("connection", connectionUUID);
+        if (masterUuid != null) tag.putUuid("connection", masterUuid);
         Inventories.toTag(tag, this.inventory);
         return tag;
     }
 
     @Override
     public void tick() {
-        if (this.world != null && this.world.isClient()) {
-            isLocked = world.getBlockState(this.getPos()).get(EnderBenchBlock.LOCKED);
-            PlayerEntity playerEntity = this.world.getClosestPlayer((double)this.pos.getX() + 0.5D, (double)this.pos.getY()  + 0.5D, (double)this.pos.getZ()  + 0.5D, range, false);
-            if (connectionUUID != null){
-                if (!isLocked) {
-                    PlayerEntity owner = this.world.getPlayerByUuid(connectionUUID);
-                    if (owner != null && !isPlayerInRange(owner)) {
-                        connectionUUID = null;
-                        IClientPlayerEntity p = (IClientPlayerEntity) owner;
-                        p.setConnectedBench(null);
-                    } else if (playerEntity != null) {
-                        connectionUUID = playerEntity.getUuid();
-                        IClientPlayerEntity p = (IClientPlayerEntity) playerEntity;
-                        p.setConnectedBench(this);
+        if (this.world == null) return;
+        boolean active = false;
+        isLocked = world.getBlockState(this.getPos()).get(EnderBenchBlock.LOCKED);
+        if (!isLocked && this.world.isClient()){
+            // If it is not locked then everyone in range should be able to open it.
+            // So this can be done in the client.
+            List<? extends PlayerEntity> players = this.world.getPlayers();
+            for (PlayerEntity player : players) {
+                if (player instanceof ClientPlayerEntity && isPlayerInRange(player)){
+                    IClientPlayerEntity p = (IClientPlayerEntity) player;
+                    if (p.enderbench_getConnectedBenchPos() != null){
+                        BlockPos original = p.enderbench_getConnectedBenchPos();
+                        if (!this.pos.equals(original)){
+                            double distance1 = player.squaredDistanceTo(getPos().getX(), getPos().getY(), getPos().getZ());
+                            double distance2 = player.squaredDistanceTo(original.getX(), original.getY(), original.getZ());
+                            if (distance1 < distance2){
+                                p.enderbench_setConnectedBenchPos(this.pos);
+                                active = true;
+                            }
+                        } else {
+                            active = true;
+                        }
                     } else {
-                        connectionUUID = null;
+                        p.enderbench_setConnectedBenchPos(this.pos);
+                        active = true;
                     }
                 }
-            } else if (playerEntity != null){
-                connectionUUID = playerEntity.getUuid();
-                IClientPlayerEntity p = (IClientPlayerEntity)playerEntity;
-                p.setConnectedBench(this);
             }
-            BlockState state = this.getCachedState();
-            world.setBlockState(pos, state.with(EnderBenchBlock.ACTIVE, connectionUUID != null));
+        } else if (isLocked && !this.world.isClient()) {
+            // If it is locked then only the currently closes player can access it.
+            if (masterUuid == null){
+                PlayerEntity playerEntity = this.world.getClosestPlayer((double)this.pos.getX() + 0.5D,
+                        (double)this.pos.getY()  + 0.5D, (double)this.pos.getZ()  + 0.5D, range, false);
+                if (playerEntity != null) {
+                    active = true;
+                    Stream<PlayerEntity> stream = PlayerStream.around(this.world, this.pos, range * range);
+                    PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
+                    passedData.writeUuid(playerEntity.getUuid());
+                    passedData.writeBlockPos(this.pos);
+
+                    stream.forEach(player -> ServerSidePacketRegistry.INSTANCE.sendToPlayer(player,
+                            PacketIDs.S2C_SETCONNECTION_PACKET_ID, passedData));
+                }
+            }
         }
+        BlockState state = this.getCachedState();
+        world.setBlockState(pos, state.with(EnderBenchBlock.ACTIVE, active));
     }
 
-    private void scheduleUpdate() {
-        assert this.world != null;
-        this.world.getBlockTickScheduler().schedule(this.getPos(), this.getCachedState().getBlock(), 5);
+
+    @Environment(EnvType.CLIENT)
+    public void setMasterUuid(UUID masterUuid) {
+        this.masterUuid = masterUuid;
     }
 
-    private boolean isPlayerInRange(PlayerEntity playerEntity){
+    public boolean isPlayerInRange(PlayerEntity playerEntity){
         double distance = playerEntity.squaredDistanceTo(this.pos.getX(), this.pos.getY(), this.pos.getZ());
         return distance <= range * range;
     }

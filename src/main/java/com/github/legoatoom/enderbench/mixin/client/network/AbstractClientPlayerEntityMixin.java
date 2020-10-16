@@ -22,6 +22,7 @@ import com.github.legoatoom.enderbench.client.network.IClientPlayerEntity;
 import com.mojang.authlib.GameProfile;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
@@ -33,7 +34,7 @@ import org.spongepowered.asm.mixin.Mixin;
 @Environment(EnvType.CLIENT)
 public abstract class AbstractClientPlayerEntityMixin extends PlayerEntity implements IClientPlayerEntity {
 
-    private EnderBenchEntity enderBenchConnection;
+    private BlockPos enderBenchConnection;
     private boolean hasConnection = false;
 
     public AbstractClientPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile profile) {
@@ -41,25 +42,30 @@ public abstract class AbstractClientPlayerEntityMixin extends PlayerEntity imple
     }
 
     @Override
-    public boolean hasConnection() {
+    public boolean enderbench_hasConnection() {
         if (hasConnection){
-            if (enderBenchConnection.getConnectionUUID() == this.getUuid()){
-                return true;
+            BlockEntity entity = this.world.getBlockEntity(enderBenchConnection);
+            if (entity instanceof EnderBenchEntity){
+                if (!((EnderBenchEntity) entity).isPlayerInRange(this)){
+                    hasConnection = false;
+                    enderbench_setConnectedBenchPos(null);
+                }
             } else {
-                setConnectedBench(null);
+                hasConnection = false;
+                enderbench_setConnectedBenchPos(null);
             }
         }
-        return false;
+        return hasConnection;
     }
 
     @Override
-    public EnderBenchEntity getConnectedBench() {
+    public BlockPos enderbench_getConnectedBenchPos() {
         return enderBenchConnection;
     }
 
     @Override
-    public void setConnectedBench(@Nullable EnderBenchEntity enderBenchEntity) {
-        hasConnection = (enderBenchEntity != null);
-        enderBenchConnection = enderBenchEntity;
+    public void enderbench_setConnectedBenchPos(@Nullable BlockPos enderBenchEntityPos) {
+        hasConnection = (enderBenchEntityPos != null);
+        enderBenchConnection = enderBenchEntityPos;
     }
 }

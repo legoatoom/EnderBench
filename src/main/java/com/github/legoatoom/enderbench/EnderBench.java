@@ -19,7 +19,7 @@ package com.github.legoatoom.enderbench;
 
 import com.github.legoatoom.enderbench.block.ModBlocks;
 import com.github.legoatoom.enderbench.block.entity.ModBlockEntityType;
-import com.github.legoatoom.enderbench.client.network.ServerSidePacketRegister;
+import com.github.legoatoom.enderbench.client.network.ModServerPacketRegister;
 import com.github.legoatoom.enderbench.item.ModItems;
 import com.github.legoatoom.enderbench.screen.ModScreenHandlerType;
 import com.github.legoatoom.enderbench.sound.ModSoundEvents;
@@ -40,7 +40,7 @@ public class EnderBench implements ModInitializer {
         ModScreenHandlerType.load();
         ModBlockEntityType.load();
         ModSoundEvents.load();
-        ServerSidePacketRegister.init();
+        ModServerPacketRegister.init();
     }
 
 }
