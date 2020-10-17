@@ -191,10 +191,10 @@ public class EnderBenchEntity extends BlockEntity implements NamedScreenHandlerF
                             double distance2 = player.squaredDistanceTo(original.getX(), original.getY(), original.getZ());
                             if (distance1 < distance2){
                                 p.enderbench_setConnectedBenchPos(this.pos);
-                                active = true;
+                                active = !player.isSpectator();
                             }
                         } else {
-                            active = true;
+                            active = !player.isSpectator();
                         }
                     } else {
                         p.enderbench_setConnectedBenchPos(this.pos);
@@ -203,7 +203,9 @@ public class EnderBenchEntity extends BlockEntity implements NamedScreenHandlerF
                 }
             }
             BlockState state = this.getCachedState();
-            world.setBlockState(pos, state.with(EnderBenchBlock.ACTIVE, active));
+            if (state.get(EnderBenchBlock.ACTIVE) != active) {
+                world.setBlockState(pos, state.with(EnderBenchBlock.ACTIVE, active));
+            }
         } else if (!this.world.isClient()) {
             // If it is locked then only the currently closes player can access it.
             if (isLocked) {
@@ -211,15 +213,14 @@ public class EnderBenchEntity extends BlockEntity implements NamedScreenHandlerF
                     PlayerEntity playerEntity = this.world.getClosestPlayer((double) this.pos.getX() + 0.5D,
                             (double) this.pos.getY() + 0.5D, (double) this.pos.getZ() + 0.5D, range, false);
                     if (playerEntity != null) {
-                        active = true;
+                        active = !playerEntity.isSpectator();
                         Stream<PlayerEntity> stream = PlayerStream.around(this.world, this.pos, range * range);
                         PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
                         masterUuid = playerEntity.getUuid();
                         passedData.writeUuid(playerEntity.getUuid());
                         passedData.writeBlockPos(this.pos);
 
-                        stream.forEach(player -> ServerSidePacketRegistry.INSTANCE.sendToPlayer(player,
-                                PacketIDs.S2C_SETCONNECTION_PACKET_ID, passedData));
+                        stream.forEach(player -> ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, PacketIDs.S2C_SETCONNECTION_PACKET_ID, passedData));
                     }
                 } else {
                     active = true;
@@ -228,18 +229,35 @@ public class EnderBenchEntity extends BlockEntity implements NamedScreenHandlerF
                 masterUuid = null;
             }
             BlockState state = this.getCachedState();
-            world.setBlockState(pos, state.with(EnderBenchBlock.ACTIVE, active));
+            if (state.get(EnderBenchBlock.ACTIVE) != active) {
+                world.setBlockState(pos, state.with(EnderBenchBlock.ACTIVE, active));
+            }
         } else if (isLocked && this.world.isClient){
             if (masterUuid != null) {
-                IClientPlayerEntity a = ((IClientPlayerEntity) (world.getPlayerByUuid(masterUuid)));
-                if (a != null) {
-                    if (a.enderbench_getConnectedBenchPos() == null) {
+                PlayerEntity player = world.getPlayerByUuid(masterUuid);
+                IClientPlayerEntity a = ((IClientPlayerEntity) player);
+                if (a != null && isPlayerInRange(player)) {
+                    BlockPos original = a.enderbench_getConnectedBenchPos();
+                    if (original == null) {
                         a.enderbench_setConnectedBenchPos(this.pos);
+                    } else if (!original.equals(this.pos)) {
+                        double distance1 = player.squaredDistanceTo(getPos().getX(), getPos().getY(), getPos().getZ());
+                        double distance2 = player.squaredDistanceTo(original.getX(), original.getY(), original.getZ());
+                        if (distance1 < distance2){
+                            a.enderbench_setConnectedBenchPos(this.pos);
+                            active = true;
+                        }
+                    } else {
+                        active = true;
                     }
                 }
+
+            }
+            BlockState state = this.getCachedState();
+            if (state.get(EnderBenchBlock.ACTIVE) != active) {
+                world.setBlockState(pos, state.with(EnderBenchBlock.ACTIVE, active));
             }
         }
-
     }
 
 

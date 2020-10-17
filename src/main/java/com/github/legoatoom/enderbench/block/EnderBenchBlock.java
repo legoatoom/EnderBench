@@ -184,6 +184,8 @@ public class EnderBenchBlock extends BlockWithEntity {
         }
     }
 
+
+
     @Nullable
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         return this.getDefaultState().with(LOCKED, ctx.getWorld().isReceivingRedstonePower(ctx.getBlockPos()));
