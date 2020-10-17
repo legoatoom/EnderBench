@@ -20,6 +20,8 @@ package com.github.legoatoom.enderbench.mixin.client;
 import com.github.legoatoom.enderbench.client.network.IClientPlayerEntity;
 import com.github.legoatoom.enderbench.client.network.PacketIDs;
 import io.netty.buffer.Unpooled;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
@@ -34,6 +36,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.Slice;
 
+@Environment(EnvType.CLIENT)
 @Mixin(MinecraftClient.class)
 public abstract class MinecraftClientMixin {
 

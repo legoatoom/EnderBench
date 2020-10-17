@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Time is following the [Holocene Calendar](https://en.wikipedia.org/wiki/Holocene_calendar).
 
+## [1.0.1] - 12020-10-17
+
+### Fixed
+- Small mistake in mixin declaration, note to self: Client Mixins belong for only Clients.
+
+
 ## [1.0.0] - 12020-10-17
 ### Optimized
 - Ender Bench Network Optimization.

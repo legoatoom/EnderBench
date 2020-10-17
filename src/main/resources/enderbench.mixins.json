@@ -4,10 +4,10 @@
   "package": "com.github.legoatoom.enderbench.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "client.MinecraftClientMixin",
-    "client.network.AbstractClientPlayerEntityMixin"
   ],
   "client": [
+    "client.MinecraftClientMixin",
+    "client.network.AbstractClientPlayerEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

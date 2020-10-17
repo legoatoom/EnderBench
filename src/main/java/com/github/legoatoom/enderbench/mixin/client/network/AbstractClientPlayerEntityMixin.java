@@ -32,8 +32,8 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Inject;
 
-@Mixin(AbstractClientPlayerEntity.class)
 @Environment(EnvType.CLIENT)
+@Mixin(AbstractClientPlayerEntity.class)
 public abstract class AbstractClientPlayerEntityMixin extends PlayerEntity implements IClientPlayerEntity {
 
     private BlockPos enderBenchConnection;
