@@ -6,12 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Time is following the [Holocene Calendar](https://en.wikipedia.org/wiki/Holocene_calendar).
 
-## [1.0.1] - UNRELEASED
+## [1.0.0] - 12020-10-17
 ### Optimized
 - Ender Bench Network Optimization.
 
 ### Added
-- Config file for the range.s
+- Config file for the range of the ender bench
 
 
 ## [0.1.0] - 12020-10-14
