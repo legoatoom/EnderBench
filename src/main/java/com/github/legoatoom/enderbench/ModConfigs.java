@@ -17,7 +17,35 @@
 
 package com.github.legoatoom.enderbench;
 
+import net.fabricmc.loader.api.FabricLoader;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
+@SuppressWarnings("SameParameterValue")
 public class ModConfigs {
-    public static final double EnderBenchRange = 32D;
+    public static final double EnderBenchRange;
     public static final int EnderBenchSize = 15;
+
+    public static final String configFileLoc = "../src/main/resources/configs.properties";
+
+    static {
+        Properties prop = new Properties();
+        try {
+            prop.load(new FileInputStream(configFileLoc));
+        } catch (IOException ignored) { }
+        EnderBenchRange = getDoubleProperty(prop, "enderBenchRange", 32D);
+    }
+
+    private static double getDoubleProperty(Properties properties, String key, Double defaultProperty){
+        String value = properties.getProperty(key, Double.toString(defaultProperty));
+        double d_value;
+        try {
+            d_value = Double.parseDouble(value);
+        } catch (NumberFormatException n){
+            d_value = defaultProperty;
+        }
+        return d_value;
+    }
 }

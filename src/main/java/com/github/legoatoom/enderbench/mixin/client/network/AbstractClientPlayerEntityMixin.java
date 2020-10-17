@@ -25,17 +25,18 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.Inject;
 
 @Mixin(AbstractClientPlayerEntity.class)
 @Environment(EnvType.CLIENT)
 public abstract class AbstractClientPlayerEntityMixin extends PlayerEntity implements IClientPlayerEntity {
 
     private BlockPos enderBenchConnection;
-    private boolean hasConnection = false;
 
     public AbstractClientPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile profile) {
         super(world, pos, yaw, profile);
@@ -43,10 +44,14 @@ public abstract class AbstractClientPlayerEntityMixin extends PlayerEntity imple
 
     @Override
     public boolean enderbench_hasConnection() {
-        if (hasConnection){
+        boolean hasConnection = true;
+        try {
             BlockEntity entity = this.world.getBlockEntity(enderBenchConnection);
-            if (entity instanceof EnderBenchEntity){
-                if (!((EnderBenchEntity) entity).isPlayerInRange(this)){
+            if (entity instanceof EnderBenchEntity) {
+                if (((EnderBenchEntity) entity).isLocked && (!this.getUuid().equals(((EnderBenchEntity) entity).getMasterUuid()))) {
+                    hasConnection = false;
+                    enderbench_setConnectedBenchPos(null);
+                } else if (!((EnderBenchEntity) entity).isPlayerInRange(this)) {
                     hasConnection = false;
                     enderbench_setConnectedBenchPos(null);
                 }
@@ -54,7 +59,7 @@ public abstract class AbstractClientPlayerEntityMixin extends PlayerEntity imple
                 hasConnection = false;
                 enderbench_setConnectedBenchPos(null);
             }
-        }
+        } catch (NullPointerException e) { hasConnection = false; }
         return hasConnection;
     }
 
@@ -65,7 +70,6 @@ public abstract class AbstractClientPlayerEntityMixin extends PlayerEntity imple
 
     @Override
     public void enderbench_setConnectedBenchPos(@Nullable BlockPos enderBenchEntityPos) {
-        hasConnection = (enderBenchEntityPos != null);
         enderBenchConnection = enderBenchEntityPos;
     }
 }

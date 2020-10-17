@@ -57,7 +57,7 @@ public abstract class MinecraftClientMixin {
     private void injected(MinecraftClient minecraftClient, @Nullable Screen screen){
         IClientPlayerEntity p = (IClientPlayerEntity)player;
         assert p != null;
-        if (p.enderbench_hasConnection() && player.isSneaking()){
+        if (player.isSneaking() && p.enderbench_hasConnection()){
             BlockPos pos = p.enderbench_getConnectedBenchPos();
             PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
             passedData.writeBlockPos(pos);

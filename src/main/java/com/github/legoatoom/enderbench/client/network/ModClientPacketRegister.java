@@ -18,7 +18,11 @@ public class ModClientPacketRegister {
                     BlockPos pos = packetByteBuf.readBlockPos();
                     EnderBenchEntity entity = (EnderBenchEntity) packetContext.getPlayer().world.getBlockEntity(pos);
                     if (entity == null) return;
-                    packetContext.getTaskQueue().execute(() -> entity.setMasterUuid(uuid));
+                    packetContext.getTaskQueue().execute(() -> {
+                        if (packetContext.getPlayer().getUuid().equals(uuid))
+                            ((IClientPlayerEntity) packetContext.getPlayer()).enderbench_setConnectedBenchPos(pos);
+                        entity.setMasterUuid(uuid);
+                    });
                 });
     }
 }

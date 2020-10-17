@@ -17,10 +17,14 @@
 
 package com.github.legoatoom.enderbench.client.network;
 
+import com.github.legoatoom.enderbench.EnderBench;
 import com.github.legoatoom.enderbench.block.EnderBenchBlock;
+import com.github.legoatoom.enderbench.block.entity.EnderBenchEntity;
 import com.github.legoatoom.enderbench.sound.ModSoundEvents;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
+import net.fabricmc.fabric.api.server.PlayerStream;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -30,14 +34,33 @@ public class ModServerPacketRegister {
     public static void init(){
         ServerSidePacketRegistry.INSTANCE.register(PacketIDs.OPEN_BENCH_PACKET_ID, ((packetContext, packetByteBuf) -> {
             BlockPos pos = packetByteBuf.readBlockPos();
+            PlayerEntity player = packetContext.getPlayer();
             packetContext.getTaskQueue().execute(() -> {
-                World world = packetContext.getPlayer().world;
+                World world = player.world;
                 BlockState state = world.getBlockState(pos);
+
+                // Check if the person can actually open it.
+                try {
+                    EnderBenchEntity entity = (EnderBenchEntity) world.getBlockEntity(pos);
+                    assert entity != null;
+                    if (!entity.isPlayerInRange(player)){
+                        EnderBench.LOGGER.warn(
+                                String.format("%s is trying to open an Ender Bench that they cannot reach!",
+                                        player.getDisplayName()));
+                        return;
+                    }
+                } catch (ClassCastException | NullPointerException ex){
+                    EnderBench.LOGGER.warn(
+                            String.format("%s wanted to open an Ender Bench that no longer exists.",
+                                    player.getDisplayName()));
+                    return;
+                }
+
                 NamedScreenHandlerFactory screenHandlerFactory = state.createScreenHandlerFactory(world, pos);
                 if (screenHandlerFactory != null) {
-                    packetContext.getPlayer().openHandledScreen(screenHandlerFactory);
+                    player.openHandledScreen(screenHandlerFactory);
+                    EnderBenchBlock.playSound(world, ModSoundEvents.ENDER_BENCH_OPEN, player.getBlockPos());
                 }
-                EnderBenchBlock.playSound(world, ModSoundEvents.ENDER_BENCH_OPEN, packetContext.getPlayer().getBlockPos());
             });
         }));
 
